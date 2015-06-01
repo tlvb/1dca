@@ -65,28 +65,30 @@ void combine_subtract_worlds(uint8_t *dst, uint8_t *src, unsigned int n, uint8_t
 		}
 	}
 } /*}}}*/
-void strangeland(uint8_t *land, unsigned int w, unsigned int h, unsigned int rule, uint8_t strength) {
-	build_world(land, w, h, rule, 1000);
+void strangeland(uint8_t *land, unsigned int w, unsigned int h, unsigned int rule, uint8_t strength, unsigned int baserate) { /*{{{*/
+	build_world(land, w, h, rule, baserate);
+	unsigned int ratediff = baserate/10;
 	uint8_t *layer = malloc(sizeof(uint8_t)*w*h);
 	for (int i=0; i<4; ++i) {
-		build_world(layer, w, h, rule, 900-200*i);
+		build_world(layer, w, h, rule, baserate-ratediff*2*(i+1));
 		combine_subtract_worlds(land, layer, w*h, strength);
-		build_world(layer, w, h, rule, 900-200*i-100);
+		build_world(layer, w, h, rule, baserate-ratediff*2*(i+2));
 		combine_add_worlds(land, layer, w*h, strength);
 	}
 	build_world(layer, w, h, rule, 0);
 	combine_subtract_worlds(land, layer, w*h, 255);
 	free(layer);
-}
+} /*}}}*/
 int main(void) { /*{{{*/
 	srand(time(NULL)+getpid());
 	unsigned int rule = 184;
-	unsigned int w = 640;
-	unsigned int h = 480;
+	unsigned int w = 2048;
+	unsigned int h = 768;
+	unsigned int baserate = 250;
 	uint8_t *world[4];
 	for (unsigned int i=0; i<4; ++i) {
 		world[i] = malloc(sizeof(uint8_t)*w*h);
-		strangeland(world[i], w, h, rule, 191);
+		strangeland(world[i], w, h, rule, 191, baserate);
 	}
 	output_ppm(stdout, world[0], world[1], world[2], world[3], w, h);
 	for (unsigned int i=0; i<4; ++i) {
