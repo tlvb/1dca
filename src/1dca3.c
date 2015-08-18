@@ -79,18 +79,33 @@ void strangeland(uint8_t *land, unsigned int w, unsigned int h, unsigned int rul
 	combine_subtract_worlds(land, layer, w*h, 255);
 	free(layer);
 } /*}}}*/
-int main(void) { /*{{{*/
+int main(int argc, const char **argv) { /*{{{*/
+	if (argc != 4) {
+		fprintf(
+			stderr,
+			"layers several iterations of rule 184 on top of each other, in color\n" \
+			"run as %s outfile.ppm width height\n", argv[0]
+		);
+		return 1;
+	}
 	srand(time(NULL)+getpid());
 	unsigned int rule = 184;
-	unsigned int w = 2048;
-	unsigned int h = 768;
+	unsigned int w = atoi(argv[2]);
+	unsigned int h = atoi(argv[3]);;
 	unsigned int baserate = 250;
 	uint8_t *world[4];
 	for (unsigned int i=0; i<4; ++i) {
 		world[i] = malloc(sizeof(uint8_t)*w*h);
 		strangeland(world[i], w, h, rule, 191, baserate);
 	}
-	output_ppm(stdout, world[0], world[1], world[2], world[3], w, h);
+	FILE *f = fopen(argv[1], "wb");
+	if (f != NULL) {
+		output_ppm(f, world[0], world[1], world[2], world[3], w, h);
+		fclose(f);
+	}
+	else {
+		fprintf(stderr, "file opening error\n");
+	}
 	for (unsigned int i=0; i<4; ++i) {
 		free(world[i]);
 	}

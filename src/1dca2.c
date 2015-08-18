@@ -61,11 +61,19 @@ void combine_subtract_worlds(uint8_t *dst, uint8_t *src, unsigned int n, uint8_t
 		}
 	}
 } /*}}}*/
-int main(void) { /*{{{*/
+int main(int argc, const char **argv) { /*{{{*/
+	if (argc != 4) {
+		fprintf(
+			stderr,
+			"layers several iterations of rule 184 on top of each other\n" \
+			"run as %s outfile.pgm width height\n", argv[0]
+		);
+		return 1;
+	}
 	srand(time(NULL)+getpid());
 	unsigned int rule = 184;
-	unsigned int w = 1920;
-	unsigned int h = 1080;
+	unsigned int w = atoi(argv[2]);
+	unsigned int h = atoi(argv[3]);
 	uint8_t *world = calloc(sizeof(uint8_t), w*h);
 	uint8_t *xpsme = calloc(sizeof(uint8_t), w*h);
 	build_world(world, w, h, rule, 1000);
@@ -77,7 +85,14 @@ int main(void) { /*{{{*/
 	}
 	build_world(xpsme, w, h, rule, 0);
 	combine_subtract_worlds(world, xpsme, w*h, 255);
-	output_pgm(stdout, world, w, h);
+	FILE *f = fopen(argv[1], "wb");
+	if (f != NULL) {
+		output_pgm(f, world, w, h);
+		fclose(f);
+	}
+	else {
+		fprintf(stderr, "file opening error\n");
+	}
 	free(xpsme);
 	free(world);
 	return 0;

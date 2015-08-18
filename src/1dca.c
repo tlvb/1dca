@@ -72,9 +72,9 @@ int main(int argc, const char *const*argv) { /*{{{*/
 	if (argc < 4) {
 		fprintf(
 			stderr,
-			"lookup table based 1d cellular automaton with pbm output\n",
-			"%s rule width height [chance of permutation]> somefile\n"
-			"the width will be truncated to a power of eight\n"
+			"lookup table based 1d cellular automaton with pbm output\n"
+			"%s rule width height [chance of permutation] > somefile\n"
+			"the width will be truncated to a multiple of eight\n"
 			"example: %s 184 1024 768\n",
 			argv[0], argv[0]
 		);
