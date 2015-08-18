@@ -3,7 +3,7 @@
 bool create_gl_window(windowdata *wd) { /*{{{*/
 	SDL_Init(SDL_INIT_VIDEO);
 	// window creation {{{
-	if (wd->width <= 0 || wd->height <= 0) {
+	if ((wd->width <= 0 || wd->height <= 0) && ((wd->flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == 0)) {
 		fprintf(stderr, "unreasonable window dimensions: %dx%d\n", wd->width, wd->height);
 		return false;
 	}
